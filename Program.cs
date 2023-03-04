@@ -24,16 +24,12 @@ if (app.Environment.IsDevelopment())
 }
 
 // Enable the ability to receive http requests
+app.UseHttpsRedirection();
 app.UseRouting();
-app.UseEndpoints(endpoints =>
+app.UseAuthorization();
+/*app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
-});
-
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
+});*/
 app.MapControllers();
 app.Run();
