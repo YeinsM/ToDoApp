@@ -26,6 +26,11 @@ if (app.Environment.IsDevelopment())
 // Enable the ability to receive http requests
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseCors(builder => builder
+       .AllowAnyHeader()
+       .AllowAnyMethod()
+       .AllowAnyOrigin()
+    );
 app.UseAuthorization();
 /*app.UseEndpoints(endpoints =>
 {
