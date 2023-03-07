@@ -1,5 +1,7 @@
 import React from 'react';
 
+// Long verification for tasks, delete for tasks
+
 export const TodoList = ({ tasks, onEdit, onDelete }) => (
   <div>
     {tasks.length > 0 ? (

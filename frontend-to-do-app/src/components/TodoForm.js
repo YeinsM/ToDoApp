@@ -1,38 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from "react";
 
-export const TodoForm = ({ onSubmit, task }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-
-  useEffect(() => {
-    if (task) {
-      setTitle(task.title);
-      setDescription(task.description);
-    }
-  }, [task]);
+export const TodoForm = ({ onAddTask }) => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (task) {
-      onSubmit(task.id, { title, description, isCompleted: task.isCompleted });
-    } else {
-      onSubmit({ title, description, isCompleted: false });
-      setTitle('');
-      setDescription('');
+    if (!title || !description) {
+      return;
     }
+    const newTask = {
+      title,
+      description,
+      isCompleted,
+    };
+    onAddTask(newTask);
+    setTitle("");
+    setDescription("");
+    setIsCompleted(false);
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <label>
-        Título:
-        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
+        Title:
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
       </label>
+      <br />
       <label>
-        Descripción:
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+        Description:
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
       </label>
-      <button type="submit">{task ? 'Actualizar tarea' : 'Agregar tarea'}</button>
+      <br />
+      <label>
+        Completed:
+        <input
+          type="checkbox"
+          checked={isCompleted}
+          onChange={(e) => setIsCompleted(e.target.checked)}
+        />
+      </label>
+      <br />
+      <button type="submit">Add Task</button>
     </form>
   );
 };

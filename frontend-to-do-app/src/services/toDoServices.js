@@ -1,3 +1,4 @@
+// Manage for all services protocols for site
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:5258/api';

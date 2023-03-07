@@ -1,4 +1,4 @@
-// App.js
+// App.js manage application state and renders for the whole component
 import { useEffect, useReducer } from 'react';
 import Menu from './components/Menu';
 import TodoForm from './components/TodoForm';
@@ -39,7 +39,7 @@ function App() {
   const handleUpdateTask = (id, task) => {
     put(id, task)
       .then(data => {
-        dispatch({ type: 'UPDATE_TASK_SUCCESS', payload: id, data });
+        dispatch({ type: 'UPDATE_TASK_SUCCESS', payload: data });
       })
       .catch(error => {
         console.log(error);
@@ -63,7 +63,7 @@ function App() {
       {state.error && <p>{state.error}</p>}
       {!state.isLoading && !state.error && (
         <>
-          <TodoForm onSubmit={handleAddTask} />
+          <TodoForm onAddTask={handleAddTask} />
           <TodoList tasks={state.tasks} onEdit={handleUpdateTask} onDelete={handleDeleteTask} />
         </>
       )}
