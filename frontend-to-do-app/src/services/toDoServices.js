@@ -14,7 +14,6 @@ export const post = async (task) => {
 };
 
 export const put = async (taskId, task) => {
-    debugger;
   const response = await axios.put(`${BASE_URL}/tasks/${taskId}`, task);
   return response.data;
 };
