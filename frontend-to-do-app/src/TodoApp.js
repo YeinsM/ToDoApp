@@ -1,9 +1,11 @@
-import { Alert, AlertTitle, Container } from "@mui/material";
-import { useEffect, useReducer, useState } from "react";
+import { Alert, AlertTitle, AppBar, Toolbar, Typography } from "@mui/material";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { TodoForm } from "./components/TodoForm";
-import { TodoList, reset } from "./components/TodoList";
+import { TodoList } from "./components/TodoList";
 import reducer from "./services/reducer";
 import { del, get, post, put } from "./services/toDoServices";
+import { CenteredContainer } from "./utils/customContainer";
+import { MenuButton } from "./components/MenuButton";
 
 const initialState = {
   tasks: [],
@@ -14,6 +16,17 @@ const initialState = {
 export const TodoApp = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [selectedTask, setSelectedTask] = useState(null);
+
+  const tasksMap = useMemo(() => new Map(state.tasks.map(task => [task.id, task])), [state.tasks]);
+
+  const todoListRef = useRef(null);
+  const todoFormRef = useRef(null);
+
+  const scrollToTodoList = () =>
+    todoListRef.current.scrollIntoView({ behavior: "smooth" });
+
+  const scrollToTodoForm = () =>
+    todoFormRef.current.scrollIntoView({ behavior: "smooth" });
 
   const getTasks = () => {
     dispatch({ type: "GET_TASKS_REQUEST" });
@@ -34,6 +47,7 @@ export const TodoApp = () => {
     post(task)
       .then((data) => {
         dispatch({ type: "ADD_TASK_SUCCESS", payload: data });
+        scrollToTodoList();
       })
       .catch((error) => {
         console.log(error);
@@ -44,7 +58,7 @@ export const TodoApp = () => {
     put(id, task)
       .then((data) => {
         dispatch({ type: "UPDATE_TASK_SUCCESS", payload: data });
-        getTasks();
+        scrollToTodoList();
       })
       .catch((error) => {
         console.log(error);
@@ -62,22 +76,48 @@ export const TodoApp = () => {
   };
 
   const handleEditTask = (id) => {
-    setSelectedTask(state.tasks.find((task) => task.id === id));
-    window.scrollTo(0, 0);
+    const taskToEdit = tasksMap.get(id);
+    setSelectedTask(taskToEdit);
+    scrollToTodoForm();
   };
 
   const handleCancelEdit = () => {
     setSelectedTask(null);
   };
 
+  useEffect(() => {
+    if (state.tasks.length > 0) {
+      scrollToTodoList();
+    }
+  }, [state.tasks]);
+
   return (
-    <Container maxWidth="md">
-      <TodoForm
-        onAddTask={handleAddTask}
-        onUpdateTask={handleUpdateTask}
-        onCancelEdit={handleCancelEdit}
-        selectedTask={selectedTask}
-      />
+    <>
+      <AppBar position="fixed">
+        <Toolbar>
+          <MenuButton
+            scrollToTodoForm={scrollToTodoForm}
+            scrollToTodoList={scrollToTodoList}
+          />
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1 }}
+            fontFamily="GalaxyFont"
+          >
+            Menu
+          </Typography>
+        </Toolbar>
+      </AppBar>
+
+      <CenteredContainer background={"#581845"} refComponent={todoFormRef}>
+        <TodoForm
+          onAddTask={handleAddTask}
+          onUpdateTask={handleUpdateTask}
+          onCancelEdit={handleCancelEdit}
+          selectedTask={selectedTask}
+        />
+      </CenteredContainer>
       {state.isLoading && (
         <Alert severity="info">
           <AlertTitle>Loading</AlertTitle>
@@ -86,13 +126,15 @@ export const TodoApp = () => {
       )}
       {state.error && <p>{state.error}</p>}
       {!state.isLoading && !state.error && (
-        <TodoList
-          tasks={state.tasks}
-          onEdit={handleEditTask}
-          onDelete={handleDeleteTask}
-        />
+        <CenteredContainer background={"#900C3F"} refComponent={todoListRef}>
+          <TodoList
+            tasks={state.tasks}
+            onEdit={handleEditTask}
+            onDelete={handleDeleteTask}
+          />
+        </CenteredContainer>
       )}
-    </Container>
+    </>
   );
 };
 
