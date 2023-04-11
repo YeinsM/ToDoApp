@@ -1,56 +1,33 @@
 import {
-  Button,
-  ButtonGroup,
   Container,
   createTheme,
   ThemeProvider,
+  Typography,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from '@mui/icons-material/Delete';
-import React from "react";
 import { DataTable } from "./DataTable";
+import { getTodoRows, todoColumns } from "../utils/tableHelper";
 
 const theme = createTheme();
 
 export const TodoList = ({ tasks, onEdit, onDelete }) => {
-  const todoColumns = [
-    { field: "title", headerName: "Title", headerAlign: 'center', width: 150 },
-    { field: "description", headerName: "Description", headerAlign: 'center', width: 430 },
-    { field: "isCompleted", headerName: "Status", headerAlign: 'center', width: 100 },
-    {
-      field: "actions",
-      headerName: "Actions",
-      headerAlign: 'center',
-      width: 100,
-      renderCell: (params) => (
-        <>
-          <ButtonGroup
-            size="medium"
-            variant="text"
-            aria-label="text button group"
-          >
-            <Button color="primary" size="small" startIcon={<EditIcon/>} onClick={() => onEdit(params.row.id)} />
-            <Button color="error" size="small" endIcon={<DeleteIcon/>} onClick={() => onDelete(params.row.id)} />
-          </ButtonGroup>
-        </>
-      ),
-    },
-  ];
-
-  const todoRows = tasks.map((task) => ({
-    id: task.id,
-    title: task.title,
-    description: task.description,
-    isCompleted: task.isCompleted ? "Completed" : "Pending",
-  }));
 
   return (
     <>
-      <br />
       <ThemeProvider theme={theme}>
         <Container maxWidth="md">
+          <Typography
+            component="h1"
+            variant="h3"
+            fontFamily="GalaxyFontB"
+            sx={{ textAlign: "center" }}
+          >
+            ToDo List
+          </Typography>
           {tasks.length > 0 ? (
-            <DataTable columns={todoColumns} rows={todoRows} />
+            <DataTable
+              columns={todoColumns(onEdit, onDelete)}
+              rows={getTodoRows(tasks)}
+            />
           ) : (
             <p>No tasks</p>
           )}

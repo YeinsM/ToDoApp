@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import CancelIcon from "@mui/icons-material/Cancel";
 
@@ -8,13 +6,12 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Checkbox,
   Container,
   createTheme,
-  FormControlLabel,
   ThemeProvider,
   Typography,
 } from "@mui/material";
+import { generateField } from "../utils/generateField";
 
 export const TodoForm = ({
   onAddTask,
@@ -64,72 +61,73 @@ export const TodoForm = ({
     if (selectedTask) {
       onUpdateTask(selectedTask.id, task);
       onCancel();
-      reset();
     } else {
       onAddTask(task);
-      reset();
     }
+
+    reset();
   };
 
   const theme = createTheme();
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+      <Container
+        component="main"
+        maxWidth="xs"
+        sx={{ backgroundColor: "#fff" }}
+      >
         <Box
           component="form"
           onSubmit={handleSubmit}
           sx={{
-            marginTop: 8,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
           }}
         >
-          <Typography component="h1" variant="h3">
-            ToDo App
+          <Typography component="h1" variant="h3" fontFamily="GalaxyFontB">
+            {selectedTask ? "Update ToDo" : "Create ToDo"}
           </Typography>
-          <TextField
-            margin="normal"
-            fullWidth
-            id="title"
-            label="Title"
-            name="title"
-            value={task.title}
-            onChange={handleChange}
-            placeholder="Title"
-          />
+          {generateField(
+            "title",
+            "Title",
+            task.title,
+            "text",
+            null,
+            null,
+            handleChange
+          )}
+          {generateField(
+            "description",
+            "Description",
+            task.description,
+            "text",
+            null,
+            true,
+            handleChange
+          )}
+          {generateField(
+            "isCompleted",
+            "Completed",
+            null,
+            "checkbox",
+            task.isCompleted,
+            null,
+            handleChange
+          )}
 
-          <TextField
-            margin="normal"
-            fullWidth
-            id="description"
-            label="Description"
-            name="description"
-            multiline
-            value={task.description}
-            onChange={handleChange}
-            placeholder="Write some description"
-          />
-          <FormControlLabel
-            name="isCompleted"
-            control={
-              <Checkbox
-                onChange={handleChange}
-                color="secondary"
-                checked={task.isCompleted}
-              />
-            }
-            label="Completed"
-            labelPlacement="start"
-          />
           <ButtonGroup
             size="medium"
-            variant="outlined"
+            variant="contained"
             aria-label="text button group"
           >
             <Button type="submit" color="success" startIcon={<AddTaskIcon />}>
-              {selectedTask ? "Update Task" : "Add Task"}
+              {selectedTask ? (
+                <span className="normal">"Update Task"</span>
+              ) : (
+                <span className="normal">"Add Task"</span>
+              )}
             </Button>
             {selectedTask && (
               <Button
@@ -138,10 +136,11 @@ export const TodoForm = ({
                 color="error"
                 endIcon={<CancelIcon />}
               >
-                Cancel
+                <span className="normal">"Cancel"</span>
               </Button>
             )}
           </ButtonGroup>
+          <br />
         </Box>
       </Container>
     </ThemeProvider>
